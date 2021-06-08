@@ -13,7 +13,6 @@ const GetTodo = ({rerenderGetTodo, userTodos}) => {
     const todos = userTodos.map(todo => {
         const toBeDoneAt = todo.toBeDoneAt?.substring(0, 10);
 
-
         if (!todo) {
             return (
                 <div className="spinner-border" role="status">

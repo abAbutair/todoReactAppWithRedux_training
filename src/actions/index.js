@@ -1,10 +1,14 @@
-// import {IS_SIGNED_IN} from "./types";
-//
-// export const logIn = (userId) => async dispatch => {}
+import {SIGN_IN, SIGN_OUT} from "./types";
 
-export const registerValues = (registerValues) => {
+export const signIn = (userId) => {
     return {
-        type: "REGISTER_VALUES",
-        payload: {...registerValues}
+        type: SIGN_IN,
+        payload: userId
+    };
+};
+
+export const signOut = () => {
+    return {
+        type: SIGN_OUT
     }
 };

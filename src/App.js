@@ -1,7 +1,11 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect} from "react";
 import {Router, Route, Switch} from "react-router-dom";
+import {connect, useDispatch} from "react-redux";
 
+import {userLoggedIn, userId} from "./localStorage";
 import history from "./history";
+import {signIn, signOut} from "./actions";
+
 import Header from "./layout/header/Header";
 import Footer from "./layout/footer/Footer";
 import LandingPage from "./components/landingPage/LandingPage";
@@ -13,38 +17,30 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./app.scss";
 
 const App = () => {
-    const [isSignedIn, setIsSignedIn] = useState(false);
+    const dispatch = useDispatch();
 
+    // if someone clear localstorage manually
     window.addEventListener("storage", () => {
+        dispatch(signOut());
         localStorage.clear();
-        setIsSignedIn(false);
-        history.push('/')
+        history.push('/');
     });
 
-    useEffect(()=>{
-        const signLocalStorage =JSON.parse(localStorage.getItem('isSignedIn'));
-        if (signLocalStorage) {
-            setIsSignedIn(signLocalStorage);
+    useEffect(() => {
+        if (userLoggedIn) {
+            dispatch(signIn(userId));
         }
-    }, []);
-
-    const onLoginSubmit = (isSignedIn) => {
-        setIsSignedIn(isSignedIn);
-    };
-    const onLogoutSubmit = (isSingedOut) => {
-        setIsSignedIn(isSingedOut);
-    }
+    }, [userLoggedIn, userId]);
 
     return (
         <Router history={history}>
-            <Header headerAfterLogin={isSignedIn} isSingedOut={onLogoutSubmit}/>
+            <Header/>
             <div className="container">
                 <Switch>
                     <Route path="/" exact component={LandingPage}/>
                     <Route path="/registration" exact component={Register}/>
-                    <Route path="/login" exact
-                           render={() => <Login isSignedIn={isSignedIn} onLoginSubmit={onLoginSubmit}/>}/>
-                    <Route path="/todo" exact render={() => <UserTodo isSignedIn={isSignedIn}/>}/>
+                    <Route path="/login" exact component={Login}/>
+                    <Route path="/todo" exact component={UserTodo}/>
                 </Switch>
             </div>
             <Footer/>
@@ -52,4 +48,10 @@ const App = () => {
     );
 };
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        isSignedIn: state.authentication.isSignedIn,
+    };
+};
+
+export default connect(mapStateToProps, {signIn, signOut})(App);

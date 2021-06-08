@@ -1,79 +1,81 @@
-import React, {useState} from "react";
+import React from "react";
+import {Form, Field} from "react-final-form";
+
 import backendApi from "../apis/backendApi";
 import history from "../history";
-// import {connect} from "react-redux";
-// import {registerValues} from "../actions";
 import "./register.scss";
 
-const Register = (props) => {
-    const [values, setValues] = useState({
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    });
-
-
-    const handleChange = e => {
-
-        // registerValues({[e.target.name]: e.target.value});
-        setValues( prevState => {
-            return {...prevState, [e.target.name]: e.target.value};
-        });
-    };
-
-    const onFormSubmit = async (e) => {
-        e.preventDefault();
-
+const Register = () => {
+    const onRegisterSubmit = async (formValues) => {
         const {data} = await backendApi.post("/user/register", {
-            name: values.fullName,
-            email: values.email,
-            password: values.password,
-            confirmPassword: values.confirmPassword
+            name: formValues.fullName,
+            email: formValues.email,
+            password: formValues.password,
+            confirmPassword: formValues.confirmPassword
         });
 
         if (data.msg === "Registered") {
-            console.log(data.msg);
             history.push("/");
         }
     };
 
+    const renderError = ({touched, error}) => {
+        if (touched && error) {
+            return (
+                <span>{error}</span>
+            );
+        }
+    };
+
+    const registerValidate = e => {
+        const errors = {};
+
+        if (e.fullName && e.fullName.length < 5 ) {
+            errors.fullName = 'Too short';
+        }
+
+        return errors;
+    };
+
+    const handleInput = ({input, meta, className, id, placeholder, label, labelClassName}) => {
+        return (
+            <React.Fragment>
+                <label htmlFor={id} className={labelClassName}>{label}</label>
+                <input {...input} placeholder={placeholder} className={className} id={id}/>
+                {renderError(meta)}
+            </React.Fragment>
+        );
+    };
+
+    const renderRegisterForm = ({handleSubmit}) => {
+        return (
+            <React.Fragment>
+                <h2>Registration</h2>
+
+                <form onSubmit={handleSubmit} className="registration-form">
+                    <div className="mb-3">
+                        <Field name="fullName" type="text" render={handleInput} className="form-control" id="fullName" placeholder="Full Name" label="Full Name" labelClassName="form-label" />
+                    </div>
+                    <div className="mb-3">
+                        <Field name="email" type="email" render={handleInput} className="form-control" id="email" placeholder="Email" label="Email" labelClassName="form-label" />
+                    </div>
+                    <div className="mb-3">
+                        <Field name="password" type="password" render={handleInput} className="form-control" id="password" placeholder="Password" label="Password" labelClassName="form-label" />
+                    </div>
+                    <div className="mb-3">
+                        <Field name="confirmPassword" type="password" render={handleInput} className="form-control" id="confirmPassword" placeholder="Confirm Password" label="Confirm Password" labelClassName="form-label" />
+                    </div>
+                    <button type="submit" className="btn btn-dark">Submit</button>
+                </form>
+            </React.Fragment>
+        );
+    };
+
     return (
         <div className="centered-block">
-            <h2>Registration</h2>
-
-            <form onSubmit={onFormSubmit} className="registration-form">
-                <div className="mb-3">
-                    <label htmlFor="fullName" className="form-label">Full Name</label>
-                    <input name="fullName" value={values.fullName} onChange={handleChange} autoComplete="off" type="text" className="form-control" id="fullName"
-                           placeholder="Full Name"/>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email</label>
-                    <input name="email" value={values.email} onChange={handleChange} autoComplete="off" type="email" className="form-control" id="email"
-                           placeholder="Email"/>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Password</label>
-                    <input name="password" value={values.password} onChange={handleChange} autoComplete="off" type="password" className="form-control" id="password"
-                           placeholder="Password"/>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                    <input name="confirmPassword" value={values.confirmPassword} onChange={handleChange} autoComplete="off" type="password" className="form-control" id="confirmPassword"
-                           placeholder="Confirm Password"/>
-                </div>
-                <button type="submit" className="btn btn-dark">Submit</button>
-            </form>
+            <Form onSubmit={onRegisterSubmit} validate={registerValidate} render={renderRegisterForm}/>
         </div>
     );
 };
-
-// const mapStateToProps = state => {
-//     console.log(state)
-//     return {
-//         formVal: state.registerValues
-//     };
-// };
 
 export default Register;

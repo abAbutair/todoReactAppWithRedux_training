@@ -1,1 +1,2 @@
-// export const IS_SIGNED_IN = 'IS_SIGNED_IN';
+export const SIGN_IN = 'SIGN_IN';
+export const SIGN_OUT = 'SIGN_OUT';

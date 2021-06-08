@@ -26,7 +26,7 @@ const UserTodo = () => {
     return (
         <div className="todo">
             <div className="todo-create">
-                <CreateTodo rerenderGetTodo={getTodos} />
+                <CreateTodo rerenderGetTodo={getTodos}/>
             </div>
 
             <div className="todo-view">

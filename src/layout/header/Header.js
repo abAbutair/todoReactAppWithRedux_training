@@ -1,17 +1,23 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import {connect, useDispatch} from "react-redux";
+
+import {signOut} from "../../actions";
 import history from "../../history";
 import "./header.scss";
 
-const Header = ({headerAfterLogin, isSingedOut}) => {
+const Header = ({isSignedIn}) => {
+    const dispatch = useDispatch();
+
     const onLogoutClick = () => {
-        isSingedOut(false)
+        dispatch(signOut());
         localStorage.clear();
         history.push('/');
     };
 
     const renderHeader = () => {
-        if (headerAfterLogin) {
+        // console.log("loginState", loginState)
+     if (isSignedIn) {
             return (
                 <div className="nav-links">
                     <Link to="/todo" className="nav-link active btn btn-light">
@@ -23,21 +29,18 @@ const Header = ({headerAfterLogin, isSingedOut}) => {
                     </button>
                 </div>
             );
-        } else {
-            return (
-                <div className="nav-links">
-                    <Link to="/login" className="nav-link active btn btn-light">
-                        <i className="bi bi-box-arrow-in-right me-1"/>Login
-                    </Link>
-
-                    <Link to="/registration" className="nav-link active btn btn-light">
-                        <i className="bi bi-door-open-fill me-1"/>Register
-                    </Link>
-                </div>
-            );
-
         }
+        return (
+            <div className="nav-links">
+                <Link to="/login" className="nav-link active btn btn-light">
+                    <i className="bi bi-box-arrow-in-right me-1"/>Login
+                </Link>
 
+                <Link to="/registration" className="nav-link active btn btn-light">
+                    <i className="bi bi-door-open-fill me-1"/>Register
+                </Link>
+            </div>
+        );
     }
 
     return (
@@ -54,4 +57,10 @@ const Header = ({headerAfterLogin, isSingedOut}) => {
     );
 };
 
-export default Header;
+const mapStateToProps = (state) => {
+    return {
+        isSignedIn: state.authentication.isSignedIn,
+    };
+};
+
+export default connect(mapStateToProps, {signOut})(Header);
