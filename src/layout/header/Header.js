@@ -1,16 +1,15 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {connect, useDispatch} from "react-redux";
+import {connect} from "react-redux";
 
 import {signOut} from "../../actions";
 import history from "../../history";
 import "./header.scss";
 
 const Header = ({isSignedIn}) => {
-    const dispatch = useDispatch();
 
     const onLogoutClick = () => {
-        dispatch(signOut());
+        signOut();
         localStorage.clear();
         history.push('/');
     };

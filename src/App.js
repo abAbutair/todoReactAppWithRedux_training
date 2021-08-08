@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {Router, Route, Switch} from "react-router-dom";
-import {connect, useDispatch} from "react-redux";
+import {connect} from "react-redux";
 
 import {userLoggedIn, userId} from "./localStorage";
 import history from "./history";
@@ -16,42 +16,36 @@ import UserTodo from "./components/todoCrud/UserTodo";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./app.scss";
 
-const App = () => {
-    const dispatch = useDispatch();
+const App = ({signIn, signOut}) => {
 
     // if someone clear localstorage manually
     window.addEventListener("storage", () => {
-        dispatch(signOut());
+        signOut();
         localStorage.clear();
         history.push('/');
     });
 
-    useEffect(() => {
-        if (userLoggedIn) {
-            dispatch(signIn(userId));
-        }
-    }, [userLoggedIn, userId]);
+    // update login state with local storage every render after login
+    if (userLoggedIn) {
+        signIn(userId);
+    }
 
     return (
         <Router history={history}>
             <Header/>
-            <div className="container">
-                <Switch>
-                    <Route path="/" exact component={LandingPage}/>
-                    <Route path="/registration" exact component={Register}/>
-                    <Route path="/login" exact component={Login}/>
-                    <Route path="/todo" exact component={UserTodo}/>
-                </Switch>
+            <div className="main">
+                <div className="container">
+                    <Switch>
+                        <Route path="/" exact component={LandingPage}/>
+                        <Route path="/registration" exact component={Register}/>
+                        <Route path="/login" exact component={Login}/>
+                        <Route path="/todo" exact component={UserTodo}/>
+                    </Switch>
+                </div>
             </div>
             <Footer/>
         </Router>
     );
 };
 
-const mapStateToProps = (state) => {
-    return {
-        isSignedIn: state.authentication.isSignedIn,
-    };
-};
-
-export default connect(mapStateToProps, {signIn, signOut})(App);
+export default connect(null, {signIn, signOut})(App);

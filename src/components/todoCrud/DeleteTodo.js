@@ -1,26 +1,18 @@
 import React from "react";
+import {connect} from "react-redux";
+import {deleteTodo, getTodos} from "../../actions";
 
-import backendApi from "../../apis/backendApi";
-import {accessToken, refreshToken} from "../../localStorage";
-
-const DeleteTodo = ({todo, rerenderGetTodo}) => {
+const DeleteTodo = ({ownTodo, deleteTodo, getTodos}) => {
     const onDeleteClick = async (id) => {
-        await backendApi.delete(`/todo/removetodo/${id}`, {
-            headers: {
-                "Content-Type": "application/json",
-                auth: `Bearer ${accessToken}`,
-                refreshToken
-            }
-        });
-
-        rerenderGetTodo();
+        deleteTodo(id);
+        getTodos();
     };
 
     return (
-        <span className="span" onClick={() => onDeleteClick(todo._id)}>
+        <span className="span" onClick={() => onDeleteClick(ownTodo._id)}>
             <i className="bi bi-trash-fill"/>
         </span>
     );
 };
 
-export default DeleteTodo;
+export default connect(null, {deleteTodo, getTodos})(DeleteTodo);

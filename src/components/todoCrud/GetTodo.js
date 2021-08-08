@@ -1,13 +1,15 @@
 import React, {useEffect} from "react";
+import {connect} from "react-redux";
+import {getTodos} from "../../actions";
 
 import CheckTodo from "./CheckTodo";
 import EditTodo from "./EditTodo";
 import DeleteTodo from "./DeleteTodo";
 
-const GetTodo = ({rerenderGetTodo, userTodos}) => {
+const GetTodo = ({getTodos, userTodos}) => {
 
     useEffect(() => {
-        rerenderGetTodo();
+        getTodos();
     }, []);
 
     const todos = userTodos.map(todo => {
@@ -18,11 +20,11 @@ const GetTodo = ({rerenderGetTodo, userTodos}) => {
                 <div className="spinner-border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
-            )
+            );
         }
 
         return (
-            <div className="col-sm-6 mb-3" key={todo._id}>
+            <div className="col-sm-12 mb-3" key={todo._id}>
                 <div className="card">
                     <div className="card-body">
                         <div className="card-body__dis">
@@ -30,17 +32,17 @@ const GetTodo = ({rerenderGetTodo, userTodos}) => {
                             <p className="card-text">{todo.description}</p>
                             <p className="card-text">{toBeDoneAt}</p>
 
-                            <CheckTodo todo={todo} rerenderGetTodo={rerenderGetTodo}/>
+                            <CheckTodo ownTodo={todo} />
                         </div>
                         <div className="card-body__crud">
-                            <EditTodo todo={todo} toBeDoneAt={toBeDoneAt} rerenderGetTodo={rerenderGetTodo} />
+                            <EditTodo ownTodo={todo} />
 
-                            <DeleteTodo todo={todo} rerenderGetTodo={rerenderGetTodo}/>
+                            <DeleteTodo ownTodo={todo} />
                         </div>
                     </div>
                 </div>
             </div>
-        )
+        );
     });
 
     return (
@@ -50,4 +52,10 @@ const GetTodo = ({rerenderGetTodo, userTodos}) => {
     );
 };
 
-export default GetTodo;
+const mapStateToProps = state => {
+    return {
+        userTodos: Object.values(state.todos),
+    }
+}
+
+export default connect(mapStateToProps, {getTodos})(GetTodo);
